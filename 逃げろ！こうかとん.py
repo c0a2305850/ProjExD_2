@@ -96,7 +96,7 @@ def main():
             
         if kk_rct.colliderect(bm_rct): # こうかとんと爆弾がぶつかったら
             print("Gameover")
-            screen = game_over(screen)
+            game_over(screen)
             return # 練習4
         screen.blit(bg_img, [0, 0]) 
 
