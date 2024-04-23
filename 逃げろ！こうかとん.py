@@ -33,6 +33,9 @@ def check_bound(obj_rct):
 
 
 def kk_img_rotate(): # 追加課題1
+    """
+    こうかとんが動く方向によって画像の向きを回転させて変更する関数
+    """
     kk_img1 = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
     kk_img2 = pg.transform.flip(kk_img1, True, False)
     return {
@@ -106,7 +109,10 @@ def main():
         tmr += 1
         clock.tick(50)
 
-def game_over(screen):
+def game_over(screen): # 追加課題3、途中
+    """
+    GameOver時に半透明の黒い画面にGameOverの文字と泣いているこうかとんの画像を表示する関数
+    """
     back = pg.Surface(WIDTH, HEIGHT)
     pg.draw.rect(back, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
     back.set.alpha(200)
