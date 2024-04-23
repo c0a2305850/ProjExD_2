@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -13,6 +14,9 @@ DELTA = {  # 移動量辞書
 }# 練習1
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+for r in range(1, 11):
+    bm_img = pg.Surface((20*r, 20*r))
+    pg.draw.circle(bm_img, (255, 0, 0), (10*r, 10*r), 10*r)
 def check_bound(obj_rct):
     """
     こうかとんRect,または,爆弾Rectの画面外判定用の関数
@@ -26,6 +30,22 @@ def check_bound(obj_rct):
         tate = False
     return yoko, tate
 # 練習3
+
+
+def kk_img_rotate(): # 追加課題1
+    kk_img1 = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 2.0)
+    kk_img2 = pg.transform.flip(kk_img1, True, False)
+    return {
+        (0, 0):kk_img1, # 初期
+        (+5, 0):kk_img2, # 右
+        (-5, 0):kk_img1, # 左
+        (0, +5):pg.transform.rotozoom(kk_img2, -90, 1.0), # 下
+        (-5, +5):pg.transform.rotozoom(kk_img1, 45, 1.0), # 左下
+        (+5, +5):pg.transform.rotozoom(kk_img2, -45, 1.0), # 右下
+        (0, -5):pg.transform.rotozoom(kk_img2, 90, 1.0), # 上
+        (-5, -5):pg.transform.rotozoom(kk_img1, -45, 1.0), # 左上
+        (+5, -5):pg.transform.rotozoom(kk_img2, 45, 1.0), # 右上
+        }
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -40,6 +60,7 @@ def main():
     bm_rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
     vx, vy = +5, -5
     # 練習2
+    kk_mv = kk_img_rotate()
     clock = pg.time.Clock()
     tmr = 0
 
@@ -49,7 +70,8 @@ def main():
                 return
         if kk_rct.colliderect(bm_rct): # こうかとんと爆弾がぶつかったら
             print("Gameover")
-            return
+            game_over(screen)
+            return # 練習4
         screen.blit(bg_img, [0, 0]) 
 
         key_lst = pg.key.get_pressed()
@@ -68,8 +90,10 @@ def main():
         #if key_lst[pg.K_RIGHT]:
         #    sum_mv[0] += 5
         kk_rct.move_ip(sum_mv)
+        kk_img = kk_mv[tuple(sum_mv)] # 移動量の合計値タプル
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+
         screen.blit(kk_img, kk_rct)
         bm_rct.move_ip(vx, vy)
         screen.blit(bm_img, bm_rct)
@@ -82,6 +106,19 @@ def main():
         tmr += 1
         clock.tick(50)
 
+def game_over(screen):
+    back = pg.Surface(WIDTH, HEIGHT)
+    pg.draw.rect(back, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
+    back.set.alpha(200)
+    screen.blit(back, [0, 0])
+    fonto = pg.font.Font(None, 80)
+    txt = fonto.render("Game Over", True, (255, 255, 255))
+    rct = txt.get_rect()
+    rct.center = WIDTH/2, HEIGHT/2
+    screen.blit(back, [0, 0])
+    screen.blit(txt, rct)
+    pg.display.update()
+    time.sleep(5)
 
 if __name__ == "__main__":
     pg.init()
