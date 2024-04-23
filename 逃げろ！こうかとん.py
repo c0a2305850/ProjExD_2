@@ -6,17 +6,19 @@ import pygame as pg
 
 
 WIDTH, HEIGHT = 1600, 900
+
+
 DELTA = {  # 移動量辞書
     pg.K_UP: (0, -5),
     pg.K_DOWN: (0, +5),
     pg.K_LEFT: (-5, 0),
     pg.K_RIGHT: (+5, 0)
 }# 練習1
+
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-for r in range(1, 11):
-    bm_img = pg.Surface((20*r, 20*r))
-    pg.draw.circle(bm_img, (255, 0, 0), (10*r, 10*r), 10*r)
+
 def check_bound(obj_rct):
     """
     こうかとんRect,または,爆弾Rectの画面外判定用の関数
@@ -49,6 +51,26 @@ def kk_img_rotate(): # 追加課題1
         (-5, -5):pg.transform.rotozoom(kk_img1, -45, 1.0), # 左上
         (+5, -5):pg.transform.rotozoom(kk_img2, 45, 1.0), # 右上
         }
+
+
+def game_over(screen:pg.Surface) -> None: # 追加課題3、途中
+    """
+    GameOver時に半透明の黒い画面にGameOverの文字と泣いているこうかとんの画像を表示する関数
+    """
+    back = pg.Surface(WIDTH, HEIGHT)
+    pg.draw.rect(back, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
+    back.set_alpha(200)
+    screen.blit(back, [0, 0])
+    fonto = pg.font.Font(None, 80)
+    txt = fonto.render("Game Over", True, (255, 255, 255))
+    rct = txt.get_rect()
+    rct.center = WIDTH/2, HEIGHT/2
+    screen.blit(back, [0, 0])
+    screen.blit(txt, rct)
+    pg.display.update()
+    time.sleep(5)
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -71,9 +93,10 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
+            
         if kk_rct.colliderect(bm_rct): # こうかとんと爆弾がぶつかったら
             print("Gameover")
-            game_over(screen)
+            screen = game_over(screen)
             return # 練習4
         screen.blit(bg_img, [0, 0]) 
 
@@ -96,7 +119,6 @@ def main():
         kk_img = kk_mv[tuple(sum_mv)] # 移動量の合計値タプル
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-
         screen.blit(kk_img, kk_rct)
         bm_rct.move_ip(vx, vy)
         screen.blit(bm_img, bm_rct)
@@ -109,22 +131,6 @@ def main():
         tmr += 1
         clock.tick(50)
 
-def game_over(screen): # 追加課題3、途中
-    """
-    GameOver時に半透明の黒い画面にGameOverの文字と泣いているこうかとんの画像を表示する関数
-    """
-    back = pg.Surface(WIDTH, HEIGHT)
-    pg.draw.rect(back, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
-    back.set.alpha(200)
-    screen.blit(back, [0, 0])
-    fonto = pg.font.Font(None, 80)
-    txt = fonto.render("Game Over", True, (255, 255, 255))
-    rct = txt.get_rect()
-    rct.center = WIDTH/2, HEIGHT/2
-    screen.blit(back, [0, 0])
-    screen.blit(txt, rct)
-    pg.display.update()
-    time.sleep(5)
 
 if __name__ == "__main__":
     pg.init()
